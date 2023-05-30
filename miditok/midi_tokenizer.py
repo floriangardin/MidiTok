@@ -1524,6 +1524,7 @@ class MIDITokenizer(ABC):
         apply_bpe: bool = True,
         save_programs: bool = True,
         logging: bool = True,
+        continue_on_error=True
     ):
         r"""Converts a dataset / list of MIDI files, into their token version and save them as json files
         The resulting Json files will have the shape (T, *), first dimension is tracks, second tokens.
@@ -1579,14 +1580,21 @@ class MIDITokenizer(ABC):
                     continue
 
             # Converting the MIDI to tokens and saving them as json
-            tokens = self(
-                midi, apply_bpe_if_possible=False
-            )  # BPE will be applied after if ordered
-            self.save_tokens(
-                tokens,
-                Path(out_dir, f"{Path(midi_path).stem}.json").with_suffix(".json"),
-                get_midi_programs(midi) if save_programs else None,
-            )
+            try:
+                tokens = self(
+                    midi, apply_bpe_if_possible=False
+                )  # BPE will be applied after if ordered
+                self.save_tokens(
+                    tokens,
+                    Path(out_dir, f"{Path(midi_path).stem}.json").with_suffix(".json"),
+                    get_midi_programs(midi) if save_programs else None,
+                )
+            except Exception as e:
+                if continue_on_error:
+                    print('Error with file', midi_path, ':', e, '... Continuing')
+                    continue
+                else:
+                    raise e
 
         # Perform data augmentation
         if data_augment_offsets is not None:

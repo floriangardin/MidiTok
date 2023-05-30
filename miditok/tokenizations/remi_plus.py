@@ -421,9 +421,10 @@ class REMIPlus(MIDITokenizer):
             elif token.split("_")[0] == "TimeSig":
                 num, den = self._parse_token_time_signature(token.split("_")[1])
                 current_time_signature = time_signature_changes[-1]
+                ticks_per_bar = num * time_division
                 if (
                     num != current_time_signature.numerator
-                    and den != current_time_signature.denominator
+                    or den != current_time_signature.denominator
                 ):
                     time_signature_changes.append(TimeSignature(num, den, current_tick))
             elif token.split("_")[0] == "Pitch":
@@ -512,7 +513,7 @@ class REMIPlus(MIDITokenizer):
         ]
 
         # POSITION
-        nb_positions = max(self.beat_res.values()) * 4  # 4/4 time signature
+        nb_positions = max(self.beat_res.values()) * 8  # 4/4 time signature
         vocab += [f"Position_{i}" for i in range(nb_positions)]
 
         # TIME SIGNATURE

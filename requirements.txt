@@ -4,3 +4,9 @@ numpy>=1.19,<1.24
 tokenizers>=0.13.2
 scipy  # needed for miditoolkit
 matplotlib  # needed for miditoolkit
+transformers
+torch
+torchtoolkit
+evaluate
+scikit-learn
+accelerate

@@ -1,0 +1,9 @@
+{
+  "base_model_path": "/Users/floriangardin/code/music/musiclang2/locals/remi_model",
+  "dataset_path": "/Users/floriangardin/code/music/musiclang2/locals/data_composers",
+  "tokens_path": "tokens",
+  "tokens_bpe_path": "tokens_bpe",
+  "tokens_split_path": "data",
+  "model_path": "model",
+  "tokenizer_path": "tokenizer.json"
+}
