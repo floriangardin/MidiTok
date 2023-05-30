@@ -15,5 +15,5 @@
   },
 
   "loading_method": "split",
-  "resume": false
+  "resume": true
 }

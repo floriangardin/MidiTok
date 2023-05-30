@@ -4,12 +4,15 @@ import torch
 
 class DataLoader:
 
-  def __init__(self, path, block_size=1024):
+  def __init__(self, path, block_size=1024, length=None):
     self.data = np.memmap(path, dtype=np.uint16, mode='r')
     self.block_size = block_size
+    self.length = length
 
   def __len__(self):
     # Return the number of items in your dataset.
+    if self.length is not None:
+      return self.length
     return len(self.data)
 
   def __getitem__(self, value):

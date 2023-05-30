@@ -31,7 +31,7 @@ if config.loading_method == "split":
     train_path = os.path.join(config.tokens_split_path, 'train.bin')
     val_path = os.path.join(config.tokens_split_path, 'val.bin')
     dataloader_train = DataLoader(train_path, block_size=config.model_config['n_positions'])
-    dataloader_val = DataLoader(train_path, block_size=config.model_config['n_positions'])
+    dataloader_val = DataLoader(val_path, block_size=config.model_config['n_positions'], length=1000)
 else:
     print('Using full dataloader')
     tokens_paths = list(Path(config.tokens_split_path).glob("**/*.json"))
