@@ -1,5 +1,7 @@
 import os
 
+import torch
+
 from miditok import REMI, REMIPlus
 from miditok.utils import get_midi_programs
 from miditoolkit import MidiFile
@@ -10,42 +12,44 @@ from torchtoolkit.data import create_subsets
 from transformers import GPT2LMHeadModel, GPT2Config, Trainer, TrainingArguments, GenerationConfig
 from torch import Tensor, LongTensor, stack, flip, cat, full, argmax
 from evaluate import load as load_metric
+from miditok.config import Config
+from miditok.dataloader import DataLoader
+import os
 
-DATASET_PATH = Path("/Users/floriangardin/code/music/musiclang2/locals/data_composers")
-TRAINING_PATH = Path("/Users/floriangardin/code/music/musiclang2/locals/data/training_remi")
-TRAINING_PATH_BPE = Path("/Users/floriangardin/code/music/musiclang2/locals/data/training_remi_bpe")
-TOKENIZER_PATH = Path("/Users/floriangardin/code/music/musiclang2/locals/data/tokenizer_remi.json")
-MODEL_PATH = Path("/Users/floriangardin/code/music/musiclang2/locals/data/models_remi/")
-os.makedirs(MODEL_PATH, exist_ok=True)
+config: Config = Config("config.json")
+
+use_checkpoint=True
 
 # PARAMS
 BATCH_SIZE = 1
 GRADIENT_ACCUMULATION_STEPS = 4
-FP16 = False
+FP16 = torch.cuda.is_available()
 
 tokenizer = REMIPlus()
-tokenizer.load_params(TOKENIZER_PATH)
+tokenizer.load_params(config.tokenizer_path)
 
+if config.loading_method == "split":
+    print('Using split dataloader')
+    train_path = os.path.join(config.tokens_split_path, 'train.bin')
+    val_path = os.path.join(config.tokens_split_path, 'val.bin')
+    dataloader_train = DataLoader(train_path, block_size=config.model_config['n_positions'])
+    dataloader_val = DataLoader(train_path, block_size=config.model_config['n_positions'])
+else:
+    print('Using full dataloader')
+    tokens_paths = list(Path(config.tokens_split_path).glob("**/*.json"))
+    dataset = MIDIDataset(
+        tokens_paths, max_seq_len=config.model_config['n_positions'], min_seq_len=384,
+    )
+    dataloader_train, dataloader_val = create_subsets(dataset, [0.3])
 
-tokens_paths = list(TRAINING_PATH_BPE.glob("**/*.json"))
-dataset = MIDIDataset(
-    tokens_paths, max_seq_len=512, min_seq_len=384,
-)
-subset_train, subset_valid = create_subsets(dataset, [0.3])
-
-
-
-config = GPT2Config(
+model_config = GPT2Config(
     vocab_size=len(tokenizer),
-    n_positions=512,
-    n_embd=384,
-    n_layer=4,
-    n_head=4,
     padding_token_id=tokenizer['PAD_None'],
     bos_token_id=tokenizer['BOS_None'],
     eos_token_id=tokenizer['EOS_None'],
+    **config.model_config
 )
-model = GPT2LMHeadModel(config)
+model = GPT2LMHeadModel(model_config)
 
 
 metrics = {metric: load_metric(metric) for metric in ["accuracy"]}
@@ -70,7 +74,7 @@ def preprocess_logits(logits: Tensor, _: Tensor) -> Tensor:
     return pred_ids
 
 training_config = TrainingArguments(
-    MODEL_PATH, True, True, True, False, "steps",
+    config.model_path, True, True, True, False, "steps",
     per_device_train_batch_size=BATCH_SIZE,
     per_device_eval_batch_size=BATCH_SIZE,
     gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,
@@ -101,16 +105,15 @@ training_config = TrainingArguments(
 trainer = Trainer(
     model=model,
     args=training_config,
-    data_collator=DataCollatorGen(tokenizer["PAD_None"]),
-    train_dataset=subset_train,
-    eval_dataset=subset_valid,
+    train_dataset=dataloader_train,
+    eval_dataset=dataloader_val,
     compute_metrics=compute_metrics,
     callbacks=None,
     preprocess_logits_for_metrics=preprocess_logits,
 )
 
 # Training
-train_result = trainer.train()
+train_result = trainer.train(resume_from_checkpoint=use_checkpoint)
 trainer.save_model()  # Saves the tokenizer too
 trainer.log_metrics("train", train_result.metrics)
 trainer.save_metrics("train", train_result.metrics)

@@ -12,7 +12,13 @@ Config example :
   "tokens_bpe_path": "tokens_bpe",
   "tokens_split_path": "data",
   "model_path": "model",
-  "tokenizer_path": "tokenizer.json"
+  "tokenizer_path": "tokenizer.json",
+    "model_config": {
+    "n_positions": 1024,
+    "n_layer": 4,
+    "n_head": 4,
+    "n_embd": 256
+  }
 }
 
 """
@@ -58,4 +64,14 @@ class Config:
     def tokenizer_path(self):
         return os.path.join(self.base_model_path, self.config['tokenizer_path'])
 
+    @property
+    def model_config(self):
+        return self.config['model_config']
 
+    @property
+    def loading_method(self):
+        return self.config['loading_method']
+
+    @property
+    def midi_file_test(self):
+        return self.config['midi_file_test']
