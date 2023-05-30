@@ -18,8 +18,6 @@ import os
 
 config: Config = Config("config.json")
 
-use_checkpoint=True
-
 # PARAMS
 BATCH_SIZE = 1
 GRADIENT_ACCUMULATION_STEPS = 4
@@ -113,7 +111,7 @@ trainer = Trainer(
 )
 
 # Training
-train_result = trainer.train(resume_from_checkpoint=use_checkpoint)
+train_result = trainer.train(resume_from_checkpoint=config.resume)
 trainer.save_model()  # Saves the tokenizer too
 trainer.log_metrics("train", train_result.metrics)
 trainer.save_metrics("train", train_result.metrics)

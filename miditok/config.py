@@ -75,3 +75,7 @@ class Config:
     @property
     def midi_file_test(self):
         return self.config['midi_file_test']
+
+    @property
+    def resume(self):
+        return self.config['resume']

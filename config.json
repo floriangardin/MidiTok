@@ -14,5 +14,6 @@
     "n_embd": 384
   },
 
-  "loading_method": "split"
+  "loading_method": "split",
+  "resume": false
 }
