@@ -19,8 +19,7 @@ import os
 config: Config = Config("config.json")
 
 # PARAMS
-BATCH_SIZE = 1
-GRADIENT_ACCUMULATION_STEPS = 4
+
 FP16 = torch.cuda.is_available()
 
 tokenizer = REMIPlus()
@@ -73,15 +72,15 @@ def preprocess_logits(logits: Tensor, _: Tensor) -> Tensor:
 
 training_config = TrainingArguments(
     config.model_path, True, True, True, False, "steps",
-    per_device_train_batch_size=BATCH_SIZE,
-    per_device_eval_batch_size=BATCH_SIZE,
-    gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,
+    per_device_train_batch_size=config.batch_size,
+    per_device_eval_batch_size=config.batch_size,
+    gradient_accumulation_steps=config.gradient_accumulation_steps,
     eval_accumulation_steps=None,
     eval_steps=1000,
     learning_rate=1e-4,
     weight_decay=0.01,
     max_grad_norm=3.0,
-    max_steps=2000,
+    max_steps=config.max_steps,
     lr_scheduler_type="cosine_with_restarts",
     warmup_ratio=0.3,
     log_level="debug",

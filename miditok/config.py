@@ -79,3 +79,15 @@ class Config:
     @property
     def resume(self):
         return self.config['resume']
+
+    @property
+    def max_steps(self):
+        return self.config['max_steps']
+
+    @property
+    def gradient_accumulation_steps(self):
+        return self.config['gradient_accumulation_steps']
+
+    @property
+    def batch_size(self):
+        return self.config['batch_size']
