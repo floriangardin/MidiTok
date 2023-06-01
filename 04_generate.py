@@ -45,10 +45,6 @@ else:
     model = GPT2LMHeadModel.from_pretrained(config.model_path)
 
 
-midi_file = config.midi_file_test
-tokens = tokenizer(midi_file)
-print(f"Number of tokens: {len(tokens)}")
-
 model.eval()
 import time
 start =  time.time()
@@ -58,3 +54,4 @@ print('Length of tokens:', len(tokens))
 midi = tokenizer.tokens_to_midi(deepcopy(tokens), time_division=384)
 midi.dump(config.midi_file_test)
 print(f"Generated in {time.time() - start} seconds")
+print(tokens)
