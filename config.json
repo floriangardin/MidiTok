@@ -1,7 +1,7 @@
 {
-  "base_model_path": "/Users/floriangardin/code/music/musiclang2/locals/remi_model",
+  "base_model_path": "/Users/floriangardin/code/music/musiclang2/locals/remi_model_big",
   "midi_file_test": "/Users/floriangardin/code/music/musiclang2/locals/test.mid",
-  "dataset_path": "/Users/floriangardin/code/music/musiclang2/locals/data_composers",
+  "dataset_path": "/Users/floriangardin/code/music/big_dataset",
   "tokens_path": "tokens",
   "tokens_bpe_path": "tokens_bpe",
   "tokens_split_path": "data",
@@ -9,8 +9,8 @@
   "tokenizer_path": "tokenizer.json",
   "model_config": {
     "n_positions": 512,
-    "n_layer": 4,
-    "n_head": 4,
+    "n_layer": 8,
+    "n_head": 8,
     "n_embd": 384
   },
 
@@ -18,5 +18,7 @@
   "resume": false,
   "max_steps": 100000,
   "batch_size": 1,
-  "gradient_accumulation_steps": 1,
+  "use_checkpoint": true,
+  "checkpoint": 17000,
+  "gradient_accumulation_steps": 1
 }

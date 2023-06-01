@@ -8,13 +8,24 @@ import numpy as np
 import glob
 from miditok.config import Config
 import os
+from miditok.constants import ADDITIONAL_TOKENS
 
 config: Config = Config("config.json")
 
 all_bpe_files = glob.glob(config.tokens_bpe_path + "/*.json")
 
-tokenizer = REMIPlus()
-tokenizer.load_params(config.tokenizer_path)
+tokenizer = REMIPlus(
+        additional_tokens={
+            **ADDITIONAL_TOKENS,
+            "Chord": False,
+            "chord_tokens_with_root_note": False,
+            "Program": True,
+            "Tempo": True,
+            "TimeSignature": True,
+        },
+        max_bar_embedding=None,
+        beat_res={(0, 8): 16}
+    )
 EOS_TOKEN = tokenizer['EOS_None']
 
 # Shuffle train test in all_bpe_files

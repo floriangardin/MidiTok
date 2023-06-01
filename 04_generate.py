@@ -4,12 +4,24 @@ import torch
 from miditok import REMI, REMIPlus
 from transformers import GPT2LMHeadModel, GPT2Config, Trainer, TrainingArguments, GenerationConfig
 from miditok.config import Config
+from miditok.constants import ADDITIONAL_TOKENS
 
 config: Config = Config("config.json")
-FROM_CHECKPOINT = True
-CHECKPOINT = 15000
 
-tokenizer = REMIPlus()
+
+
+tokenizer = REMIPlus(
+additional_tokens={
+            **ADDITIONAL_TOKENS,
+            "Chord": False,
+            "chord_tokens_with_root_note": False,
+            "Program": True,
+            "Tempo": True,
+            "TimeSignature": True,
+        },
+        max_bar_embedding=None,
+        beat_res={(0, 8): 16}
+)
 tokenizer.load_params(config.tokenizer_path)
 
 generation_config = dict(
@@ -24,11 +36,18 @@ generation_config = dict(
     pad_token_id=tokenizer['PAD_None'],
 )
 
+bar_token_id = tokenizer['Bar_None']
+print(f"Bar token id: {bar_token_id}")
 
-if FROM_CHECKPOINT:
-    model = GPT2LMHeadModel.from_pretrained(os.path.join(config.model_path, f'checkpoint-{CHECKPOINT}'))
+if config.use_checkpoint:
+    model = GPT2LMHeadModel.from_pretrained(os.path.join(config.model_path, f'checkpoint-{config.checkpoint}'))
 else:
     model = GPT2LMHeadModel.from_pretrained(config.model_path)
+
+
+midi_file = config.midi_file_test
+tokens = tokenizer(midi_file)
+print(f"Number of tokens: {len(tokens)}")
 
 model.eval()
 import time

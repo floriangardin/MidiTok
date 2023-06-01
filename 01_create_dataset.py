@@ -9,6 +9,7 @@ from miditok.constants import ADDITIONAL_TOKENS
 from miditok.config import Config
 
 config: Config = Config("config.json")
+CONTINUE = True
 # Creates the tokenizer and loads a MIDI
 tokenizer = REMIPlus(
         additional_tokens={
@@ -26,7 +27,13 @@ tokenizer = REMIPlus(
 # Converts MIDI files to tokens saved as JSON files
 midi_paths = list(Path(config.dataset_path).glob("**/*.mid"))
 
-tokenizer.tokenize_midi_dataset(midi_paths, config.tokens_path)
+
+existing_files = set(os.listdir(config.tokens_path))
+# Remove files with filenames in existing_files
+
+midi_paths = [midi_path for midi_path in midi_paths if midi_path.stem + ".json" not in existing_files]
+
+#tokenizer.tokenize_midi_dataset(midi_paths, config.tokens_path)
 
 # Constructs the vocabulary with BPE, from the tokenized files
 tokenizer.learn_bpe(

@@ -91,3 +91,10 @@ class Config:
     @property
     def batch_size(self):
         return self.config['batch_size']
+
+    @property
+    def use_checkpoint(self):
+        return self.config['use_checkpoint']
+    @property
+    def checkpoint(self):
+        return self.config['checkpoint']

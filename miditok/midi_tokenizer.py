@@ -503,7 +503,7 @@ class MIDITokenizer(ABC):
         """
         if seq.tokens is None:
             if seq.events is not None:
-                seq.tokens = [str(event) for event in seq.events]
+                seq.tokens = [str(event) for event in seq.events if str(event) in self.vocab]
             elif seq.ids is not None:
                 seq.tokens = self._ids_to_tokens(seq.ids)
             elif seq.bytes is not None:

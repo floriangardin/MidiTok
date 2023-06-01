@@ -25,7 +25,16 @@ setup(
     install_requires=[
         'numpy>=1.19,<1.24',
         'miditoolkit>=0.1.16',
-        'tqdm'
+        'tqdm',
+        'tokenizers>=0.13.2',
+        'scipy',  # needed for miditoolkit
+        'matplotlib',  # needed for miditoolkit
+        'transformers',
+        'torch',
+        'torchtoolkit',
+        'evaluate',
+        'scikit-learn',
+        'accelerate'
     ],
     classifiers=[
         'Intended Audience :: Developers',
