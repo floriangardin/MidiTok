@@ -98,3 +98,19 @@ class Config:
     @property
     def checkpoint(self):
         return self.config['checkpoint']
+
+    @property
+    def finetuning_path(self):
+        return self.config['finetuning_path']
+
+    @property
+    def finetuned_tokens_path(self):
+        return os.path.join(self.base_model_path, self.config['finetuned_tokens_path'])
+
+    @property
+    def finetuned_tokens_bpe_path(self):
+        return os.path.join(self.base_model_path, self.config['finetuned_tokens_bpe_path'])
+
+    @property
+    def finetuned_tokens_split_path(self):
+        return os.path.join(self.base_model_path, self.config['finetuned_tokens_split_path'])

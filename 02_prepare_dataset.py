@@ -9,59 +9,12 @@ import glob
 from miditok.config import Config
 import os
 from miditok.constants import ADDITIONAL_TOKENS
+from miditok.funcs import prepare_dataset
 
 config: Config = Config("config.json")
-
-all_bpe_files = glob.glob(config.tokens_bpe_path + "/*.json")
-
-tokenizer = REMIPlus(
-        additional_tokens={
-            **ADDITIONAL_TOKENS,
-            "Chord": False,
-            "chord_tokens_with_root_note": False,
-            "Program": True,
-            "Tempo": True,
-            "TimeSignature": True,
-        },
-        max_bar_embedding=None,
-        beat_res={(0, 8): 16}
-    )
-EOS_TOKEN = tokenizer['EOS_None']
-
-# Shuffle train test in all_bpe_files
-random.shuffle(all_bpe_files)
-split = 0.98
-train_files = all_bpe_files[:int(len(all_bpe_files) * split)]
-val_files = all_bpe_files[int(len(all_bpe_files) * split):]
-
-# We add EOS token to each file
-train_ids  = [json.load(open(file, 'r'))['ids'] + [EOS_TOKEN] for file in train_files]
-val_ids  = [json.load(open(file, 'r'))['ids'] + [EOS_TOKEN] for file in val_files]
-
-# Shuffle
-train_ids = sum(train_ids, [])
-val_ids = sum(val_ids, [])
+tokens_bpe_path = config.tokens_bpe_path
+tokenizer_path = config.tokenizer_path
+tokens_split_path = config.tokens_split_path
 
 
-filename = os.path.join(config.tokens_split_path, "train.bin")
-dtype = np.uint16 # (can do since enc.max_token_value == 50256 is < 2**16)
-arr = np.memmap(filename, dtype=dtype, mode='w+', shape=(len(train_ids),))
-arr[:] = train_ids
-arr.flush()
-
-print("Training size : ", len(arr))
-
-filename = os.path.join(config.tokens_split_path, "val.bin")
-dtype = np.uint16 # (can do since enc.max_token_value == 50256 is < 2**16)
-arr = np.memmap(filename, dtype=dtype, mode='w+', shape=(len(val_ids),))
-arr[:] = val_ids
-arr.flush()
-
-print("Val size : ", len(arr))
-# train.bin is ~17GB, val.bin ~8.5MB
-# train has ~9B tokens (9,035,582,198)
-# val has ~4M tokens (4,434,897)
-
-# to read the bin files later, e.g. with numpy:
-# m = np.memmap('train.bin', dtype=np.uint16, mode='r')
-
+prepare_dataset(tokens_bpe_path, tokenizer_path, tokens_split_path)

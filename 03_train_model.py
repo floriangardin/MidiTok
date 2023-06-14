@@ -22,7 +22,18 @@ config: Config = Config("config.json")
 
 FP16 = torch.cuda.is_available()
 
-tokenizer = REMIPlus()
+tokenizer = REMIPlus(
+        additional_tokens={
+            **ADDITIONAL_TOKENS,
+            "Chord": False,
+            "chord_tokens_with_root_note": False,
+            "Program": True,
+            "Tempo": True,
+            "TimeSignature": True,
+        },
+        max_bar_embedding=None,
+        beat_res={(0, 8): 16}
+    )
 tokenizer.load_params(config.tokenizer_path)
 
 if config.loading_method == "split":
@@ -88,7 +99,7 @@ training_config = TrainingArguments(
     logging_steps=20,
     save_strategy="steps",
     save_steps=1000,
-    save_total_limit=5,
+    save_total_limit=3,
     #no_cuda=False,
     seed=444,
     fp16=FP16,

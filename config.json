@@ -5,8 +5,12 @@
   "tokens_path": "tokens",
   "tokens_bpe_path": "tokens_bpe",
   "tokens_split_path": "data",
+  "finetuned_tokens_split_path": "finetuned_data",
   "model_path": "model",
   "tokenizer_path": "tokenizer.json",
+  "finetuning_path": "/Users/floriangardin/code/music/musiclang2/locals/nesmdb_midi",
+  "finetuned_tokens_path": "finetuned_tokens",
+  "finetuned_tokens_bpe_path": "finetuned_tokens_bpe",
   "model_config": {
     "n_positions": 512,
     "n_layer": 8,
