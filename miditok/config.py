@@ -114,3 +114,7 @@ class Config:
     @property
     def finetuned_tokens_split_path(self):
         return os.path.join(self.base_model_path, self.config['finetuned_tokens_split_path'])
+
+    @property
+    def model_type(self):
+        return self.config['model_type']

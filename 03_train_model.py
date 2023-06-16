@@ -15,6 +15,8 @@ from evaluate import load as load_metric
 from miditok.config import Config
 from miditok.dataloader import DataLoader
 import os
+from transformers import TransfoXLConfig, TransfoXLModel
+
 
 config: Config = Config("config.json")
 
@@ -50,14 +52,33 @@ else:
     )
     dataloader_train, dataloader_val = create_subsets(dataset, [0.3])
 
-model_config = GPT2Config(
-    vocab_size=len(tokenizer),
-    padding_token_id=tokenizer['PAD_None'],
-    bos_token_id=tokenizer['BOS_None'],
-    eos_token_id=tokenizer['EOS_None'],
-    **config.model_config
-)
-model = GPT2LMHeadModel(model_config)
+
+model_dict = {
+    'gpt': GPT2LMHeadModel,
+    'transfo-xl': TransfoXLModel,
+}
+
+if config.model_type == 'gpt':
+    model_config = GPT2Config(
+        vocab_size=len(tokenizer),
+        padding_token_id=tokenizer['PAD_None'],
+        bos_token_id=tokenizer['BOS_None'],
+        eos_token_id=tokenizer['EOS_None'],
+        **config.model_config
+    )
+    model = GPT2LMHeadModel(model_config)
+
+else:
+    model_config = TransfoXLConfig(
+        vocab_size=len(tokenizer),
+        padding_token_id=tokenizer['PAD_None'],
+        bos_token_id=tokenizer['BOS_None'],
+        eos_token_id=tokenizer['EOS_None'],
+        n_head=6,
+        n_layer=6,
+        d_embed=512,
+    )
+    model = TransfoXLModel(model_config)
 
 
 metrics = {metric: load_metric(metric) for metric in ["accuracy"]}

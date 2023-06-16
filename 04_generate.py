@@ -6,6 +6,7 @@ from transformers import GPT2LMHeadModel, GPT2Config, Trainer, TrainingArguments
 from miditok.config import Config
 from miditok.constants import ADDITIONAL_TOKENS
 
+
 config: Config = Config("config.json")
 
 
@@ -35,6 +36,7 @@ generation_config = dict(
     eta_cutoff=1e-3,
     pad_token_id=tokenizer['PAD_None'],
 )
+
 
 bar_token_id = tokenizer['Bar_None']
 print(f"Bar token id: {bar_token_id}")
