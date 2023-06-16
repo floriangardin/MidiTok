@@ -124,7 +124,7 @@ training_config = TrainingArguments(
     save_total_limit=3,
     #no_cuda=False,
     seed=444,
-    fp16=FP16,
+    fp16=FP16 if config.model_type == 'gpt' else False,
     load_best_model_at_end=True,
     label_smoothing_factor=0.,
     optim="adamw_torch",
