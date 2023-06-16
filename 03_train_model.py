@@ -77,6 +77,7 @@ else:
         n_head=config.model_config['n_head'],
         n_layer=config.model_config['n_layer'],
         d_embed=config.model_config['n_embd'],
+        cutoffs = []
     )
     model = TransfoXLModel(model_config)
 
