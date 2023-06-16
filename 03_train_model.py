@@ -15,7 +15,7 @@ from evaluate import load as load_metric
 from miditok.config import Config
 from miditok.dataloader import DataLoader
 import os
-from transformers import TransfoXLConfig, TransfoXLModel
+from transformers import TransfoXLConfig, TransfoXLLMHeadModel
 
 
 config: Config = Config("config.json")
@@ -55,7 +55,7 @@ else:
 
 model_dict = {
     'gpt': GPT2LMHeadModel,
-    'transfo-xl': TransfoXLModel,
+    'transfo-xl': TransfoXLLMHeadModel,
 }
 
 if config.model_type == 'gpt':
@@ -79,7 +79,7 @@ else:
         d_embed=config.model_config['n_embd'],
         cutoffs = []
     )
-    model = TransfoXLModel(model_config)
+    model = TransfoXLLMHeadModel(model_config)
 
 
 metrics = {metric: load_metric(metric) for metric in ["accuracy"]}
