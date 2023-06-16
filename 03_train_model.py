@@ -129,7 +129,7 @@ training_config = TrainingArguments(
     label_smoothing_factor=0.,
     optim="adamw_torch",
     #report_to=["tensorboard"],
-    gradient_checkpointing=True,
+    gradient_checkpointing=config.model_type == 'gpt',
 )
 
 trainer = Trainer(
