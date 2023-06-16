@@ -137,9 +137,9 @@ trainer = Trainer(
     args=training_config,
     train_dataset=dataloader_train,
     eval_dataset=dataloader_val,
-    compute_metrics=compute_metrics,
+    #compute_metrics=compute_metrics,
     callbacks=None,
-    preprocess_logits_for_metrics=preprocess_logits,
+    #preprocess_logits_for_metrics=preprocess_logits,
 )
 
 # Training
