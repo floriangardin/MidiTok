@@ -74,9 +74,9 @@ else:
         padding_token_id=tokenizer['PAD_None'],
         bos_token_id=tokenizer['BOS_None'],
         eos_token_id=tokenizer['EOS_None'],
-        n_head=6,
-        n_layer=6,
-        d_embed=512,
+        n_head=config.model_config['n_head'],
+        n_layer=config.model_config['n_layer'],
+        d_embed=config.model_config['n_embd'],
     )
     model = TransfoXLModel(model_config)
 
